@@ -48,7 +48,10 @@ class ArxivSpider(scrapy.Spider):
                 continue
             
             # 提取论文分类信息 - 在subjects部分
-            subjects_text = paper_dd.css(".list-subjects .primary-subject::text").get()
+            # 一次性拿到 primary + secondary 的所有文本
+            subject_text_parts = paper_dd.css(".list-subjects ::text").getall()
+            subjects_text = " ".join(t.strip() for t in subject_text_parts if t.strip())
+
             if not subjects_text:
                 # 如果找不到主分类，尝试其他方式获取分类
                 subjects_text = paper_dd.css(".list-subjects::text").get()
